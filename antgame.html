@@ -1,0 +1,315 @@
+<!doctype html>
+<html>
+<head>
+   <title>My Ant Game</title>
+   <script>
+     var istextgrow=false
+     function enlargetext(xcoord,ycoord){
+     // if(!istextgrow){
+        var mytext="Game Over";
+  //      mytext.style.color="red";
+        clearInterval(largetext);
+        var largetext=setInterval(bigthing,20);
+        var textsize=14;
+        var myobject=document.createElement("span");
+        myobject.style.position="absolute";
+        myobject.style.color="red";
+        myobject.style.left=xcoord+"px";
+        myobject.style.top=ycoord+"px";
+        myobject.innerHTML=mytext;
+        myobject.style.fontSize=textsize+"px";
+        var sizeanim=ants.appendChild(myobject);
+        function bigthing(){
+           textsize++;
+           if(textsize==44){
+              clearInterval(sizeanim);
+              clearInterval(largetext);
+            //   stopanim=true;
+          //     istextgrow=true;
+              myobject.style.fontsize="44px";
+             // myobject.value="0";
+
+             
+           }
+           else
+              myobject.style.fontSize=textsize+"px";
+        }
+     }
+//}
+
+      function makesquish(whichant){
+         document.getElementById("squish"+whichant).play();
+         document.getElementById("deadants"+whichant).value=1;
+
+      }
+/*
+      function anteats(whichant){
+         document.getElementById("eating"+whichant).play();
+      }*/
+
+       var updatescore=0;
+      function countant(){
+      
+         updatescore=parseInt(document.getElementById("killedants").innerHTML);
+         document.getElementById("killedants").innerHTML=updatescore+1;
+
+     }
+
+      
+      function replaceant(whichant){
+         if(document.getElementById("deadants"+whichant).value==0){
+         document.getElementById("ant"+whichant).value=0;
+         document.getElementById("deadants"+whichant).value=1;
+         document.getElementById("ant"+whichant).src="deadant.png";
+         document.getElementById("squish"+whichant).play();
+         countant();
+         }
+      }
+      var stopanim=false;
+      function createants(whichant){
+         var newant=null;
+         var meettable=null;
+         var clickant=null;
+
+         newant=document.createElement("audio");        
+         newant.id="squish"+whichant;
+         clickant=document.createElement("source");
+         clickant.type="audio/mp3";
+         clickant.src="squish.mp3";
+         newant.appendChild(clickant);
+         ants.appendChild(newant); 
+
+         newant=document.createElement("audio");
+         newant.id="eating"+whichant;
+         meettable=document.createElement("source");   
+         meettable.type="audio/mp3";
+         meettable.src="eating.mp3";
+         newant.appendChild(meettable);
+         ants.appendChild(newant);
+         
+         newant=document.createElement("input");
+         newant.type="hidden";
+         newant.id="antx"+whichant;
+         newant.value=Math.floor(Math.random()*400);
+         ants.appendChild(newant);
+
+         newant=document.createElement("input");
+         newant.type="hidden";
+         newant.id="anty"+whichant;
+         newant.value=0;
+         ants.appendChild(newant);
+
+         newant=document.createElement("img");
+         newant.id="ant"+whichant;
+         newant.src="ant0.png";
+         newant.style.position="absolute";
+         newant.style.width="30px";
+         newant.style.left=document.getElementById("antx"+whichant).value+"px";
+         newant.style.top=document.getElementById("anty"+whichant).value+"px";
+         newant.setAttribute("onmousedown","makesquish("+whichant+")");
+         newant.setAttribute("onmousedown","replaceant("+whichant+")");
+         newant.setAttribute("ontouchstart","replaceant("+whichant+")");
+         newant.setAttribute("ontouchstart","makesquish("+whichant+")");
+      //   newant.ontouchstart=replaceant(whichant);
+         ants.appendChild(newant);
+
+         newant=document.createElement("input");         
+         newant.type="hidden";
+         newant.id="deadants"+whichant;
+         newant.value=0;
+         ants.appendChild(newant);
+
+         var x=0;
+         var direction=1;
+         var antalive=true;
+       //  if(antalive){
+         var animant=setInterval(moveant,70);
+         function moveant(){
+          if(!stopanim){
+            if(document.getElementById("deadants"+whichant).value==1)
+               clearInterval(animant);
+            else{
+               document.getElementById("ant"+whichant).src="ant"+x+".png";
+               x++;
+               if(x==4)
+                  x=0;
+               var ypos=parseInt(document.getElementById("anty"+whichant).value);
+               ypos+=direction*5;
+               if(ypos<0){
+                 direction=1;
+                 ypos=0;
+               //  enlargetext();
+                 
+              }
+              if(ypos>500){
+                 stopanim=true;
+                 direction=0;
+                 enlargetext(100, 200);
+               //  anteats(whichant);
+                 document.getElementById("eating"+whichant).play();
+                 clearInterval(animant);
+                 antalive=false;
+                // document.getElementById("ant"+whichant).value=1;
+              }
+    //      }      
+              document.getElementById("anty"+whichant).value=ypos;
+              document.getElementById("ant"+whichant).style.top=ypos+"px";
+              }
+          }
+        }
+      } 
+
+       function nextant(){
+          var howmany=parseInt(noant.value);
+          createants(howmany);
+          noant.value=howmany+1;
+          message.innerHTML=noant.value;
+       }
+/*
+       function gameover(){
+          var noant=0;
+          var clocksummon=1000;
+          var tick=0;
+          if(stopanim==true){
+            clearInterval(spawnant);
+          } 
+          else{
+          var gameanim=setInterval(spawnant,1);
+          function spawnant(){
+            tick++;
+            if(tick==clocksummon/level){
+               createants(noant);
+               noant++;
+             //  clocksummon=Math.floor(clocksummon/level);
+               clocksummon=Math.floor(Math.random()*500);
+               
+               if(clocksummon==0)
+                  clocksummon=1;
+               tick=0;
+               level=level+1;
+               level.innerHTML=level;
+            }
+          //  if(noant==1000)
+            if(clocksummon==1000){
+               clearInterval(gameanim);
+            }
+         }
+      }
+   } */
+
+
+        function fingerkills(myevent){
+           if(myevent.touches[0].clientX.whichant || 
+                myevent.touches[0].clientY.whichant)
+              replaceant(whichant);
+
+        }
+/*
+function gameover(){
+var counter=1000;
+var spawncounter=0;
+var noants=0;
+var counterlevel=0;
+//var levelincrement=0;
+var gameover=setInterval(spawnant,1);
+function spawnant(){
+     if(stopanim==true){
+           clearInterval(gameover);
+     }
+
+     else{
+            counterlevel++;
+            spawncounter++;
+            if(spawncounter==Math.floor(1000/level))
+                  //spawncounter++;
+                  counter=Math.floor(Math.random()*400);
+                  counter=Math.floor(counter)
+                  createants(noants);
+                  noants++;
+                  spawncounter=0;
+                 // break;
+            if(counter==1000)
+               //document.getElementById("level").innerHTML=parseInt(document.getElementById("level")+1);
+               //level.innerHTML=level;
+           //    document.getElementById("level").innerHTML=levelincrement+1;
+             //  levelincrement= parseInt(document.getElementById("level").innerHTML);
+             document.getElementById("level").innerHTML=parseInt((document.getElementById("level").innerHTML)+1);
+               counter=0;
+            
+            if(counter==0)
+               counter=1;
+               counterlevel=0;
+
+             
+         }
+     }
+
+   }*/
+
+   function gameover(){
+      var counterlevel=0;
+      var spawncounter=0;
+      var level=1;
+      var difficulty;
+      var noants=0;
+      var gamend=setInterval(spawnant,1);
+      function spawnant(){
+         if(stopanim==true){
+            clearInterval(gamend);
+         }
+         else{
+         counterlevel++;
+         spawncounter++;
+         difficulty=Math.floor(1000/level);
+         if(counterlevel==1000){
+            counterlevel=0;
+            level=level+1;
+            document.getElementById("level").innerHTML=level;
+         
+         }
+         if(spawncounter==difficulty){
+            createants(noants);
+            noants++;
+            spawncounter=0;
+         }
+      }
+      }
+   }
+
+
+
+
+   </script>
+
+</head>
+ <body onload="gameover();">
+    <form name="antgame">
+       <div id="MyCanvas" style="width:400px; height:500px; position:relative;">       
+         <div id="picnicimages" style="display:inline-block">
+            <img id="picnictable" src="picnictable.png" style="position:absolute; width:200px; top:500px; display:inline-block" />
+            <div style="width:300px; display:inline-block;">&nbsp</div>
+            <img id="picnictable" src="picnictable.png" style="position:absolute; width:200px; top:500px; display:inline-block" />
+         </div> 
+         <input type="hidden" id="noant" value="0" />
+         <div id="ants">
+            
+         </div>
+
+         <p id="displayscore" style="text-align:right;">Ants Killed:<span id="killedants">0</span></p>
+         <p id="displaylevel" style="text-align:right;">Level:<span id="level"> </span></p>
+
+         <div id="aliveants">
+            
+         </div>
+
+         <div id="deadants">
+            
+         </div>
+
+         <div id="fingerkills"></div>
+        <!-- <button type="button" onclick="nextant();"> spawn ant </button>-->
+         <span id="message"></span>
+      </div>
+    </form>
+ </body>
+</html>
